@@ -1,2 +1,2 @@
-# hot
-A shitty hot reload function for your compiled projects written in Go
+# pip
+A shitty public IP fetcher written in Go

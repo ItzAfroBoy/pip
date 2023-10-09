@@ -8,7 +8,7 @@
    \ \_\    /\_____\\ \_\
     \/_/    \/_____/ \/_/
 <br>
-A shitty public IP fetcher written in Go  
+A shitty public IP fetcher written in Go
 </pre>
 </div>
 

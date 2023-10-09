@@ -41,8 +41,7 @@ func main() {
 	var IPData IPType
 	var DNSData DNSType
 
-	ip := flag.Args()
-	res, err := http.Get(fmt.Sprintf("http://ip-api.com/json/%s?fields=8758", ip[0]))
+	res, err := http.Get("http://ip-api.com/json/?fields=8758")
 	check(err)
 	defer res.Body.Close()
 	body, err := io.ReadAll(res.Body)

@@ -25,21 +25,33 @@ type DNSType struct {
 	}
 }
 
+type Options struct {
+	getLocation *bool
+	getDNS      *bool
+	getISP      *bool
+	polybar     *bool
+}
+
+var IPData IPType
+var DNSData DNSType
+var Opts Options
+
 func check(err error) {
-	if err != nil {
+	if err != nil && *Opts.polybar {
+		fmt.Printf("")
+		os.Exit(1)
+	} else if err != nil {
 		fmt.Println("Error:", err)
 		os.Exit(1)
 	}
 }
 
 func main() {
-	getLocation := flag.Bool("location", false, "Get location data")
-	getDNS := flag.Bool("dns", false, "Get DNS data")
-	getISP := flag.Bool("isp", false, "Get ISP data")
+	Opts.getLocation = flag.Bool("location", false, "Get location data")
+	Opts.getDNS = flag.Bool("dns", false, "Get DNS data")
+	Opts.getISP = flag.Bool("isp", false, "Get ISP data")
+	Opts.polybar = flag.Bool("polybar", false, "Display an output for polybar")
 	flag.Parse()
-
-	var IPData IPType
-	var DNSData DNSType
 
 	res, err := http.Get("http://ip-api.com/json/?fields=8758")
 	check(err)
@@ -57,19 +69,24 @@ func main() {
 	err = json.Unmarshal(DNSBody, &DNSData)
 	check(err)
 
-	IP := IPData.QUERY
-	Location := fmt.Sprintf("%s [%s] | %s | %s", IPData.CITY, IPData.ZIP, IPData.REGION, IPData.CC)
-	ISP := IPData.ISP
-	DNS := fmt.Sprintf("%s [%s]", DNSData.DNS.GEO, DNSData.DNS.IP)
+	if !*Opts.polybar {
+		IP := IPData.QUERY
+		Location := fmt.Sprintf("%s [%s] | %s | %s", IPData.CITY, IPData.ZIP, IPData.REGION, IPData.CC)
+		ISP := IPData.ISP
+		DNS := fmt.Sprintf("%s [%s]", DNSData.DNS.GEO, DNSData.DNS.IP)
 
-	fmt.Println(IP)
-	if *getLocation {
+		fmt.Println(IP)
+		if *Opts.getLocation {
+			fmt.Println(Location)
+		}
+		if *Opts.getISP {
+			fmt.Println(ISP)
+		}
+		if *Opts.getDNS {
+			fmt.Println(DNS)
+		}
+	} else {
+		Location := fmt.Sprintf("%s | %s", IPData.CITY, IPData.CC)
 		fmt.Println(Location)
-	}
-	if *getISP {
-		fmt.Println(ISP)
-	}
-	if *getDNS {
-		fmt.Println(DNS)
 	}
 }
